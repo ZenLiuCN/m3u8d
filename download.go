@@ -207,7 +207,10 @@ func (this *DownloadEnv) downloadTsFile(ts *mformat.TsInfo, skipInfo SkipTsInfo,
 			this.logToFile("skip ts " + strconv.Quote(ts.Name) + " byHttpCode: " + strconv.Itoa(httpResp.StatusCode))
 			return nil
 		}
-		return errors.New(`invalid http status code: ` + strconv.Itoa(httpResp.StatusCode) + ` url: ` + ts.Url)
+		//放过 2xx状态码
+		if httpResp.StatusCode-200>100 {
+		    return errors.New(`invalid http status code: ` + strconv.Itoa(httpResp.StatusCode) + ` url: ` + ts.Url)
+		}
 	}
 	var mTime time.Time
 	if mStr := httpResp.Header.Get("Last-Modified"); mStr != "" && useServerSideTime {
